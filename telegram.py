@@ -6,7 +6,7 @@ import json
 import requests
 import time
 import urllib
-from . import  config
+import config
 # python3: urllib.parse.quote_plus
 # python2: urllib.pathname2url
 
