@@ -1,5 +1,6 @@
 import pandas as pd
 from random import randint
+
 HOMER = 2
 CONTEXT_DISTANCE = 6
 df = pd.read_csv('./data/simpsons_script_lines.csv', delimiter=',', error_bad_lines=False)

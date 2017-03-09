@@ -7,8 +7,13 @@ import requests
 import time
 import urllib
 import config
+import seq2seq.seq2seqbot as bot
+import traceback
+import numpy as np
 # python3: urllib.parse.quote_plus
 # python2: urllib.pathname2url
+
+exception_phrases = ["D'oh!!!", "Why you little!", "Aaargh!"]
 
 
 URL = "https://api.telegram.org/bot{}/".format(config.TOKEN)
@@ -57,8 +62,14 @@ def get_last_chat_id_and_text(updates):
 
 
 def send_message(text, chat_id):
-    text = urllib.parse.quote_plus(text) # urllib.parse.quote_plus(text) # (python3)
-    url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
+    response = ""
+    try:
+        response = bot.send_message(text, chat_id)
+    except Exception as inst:
+        traceback.print_exc()
+        response = np.random.choice(exception_phrases, 1)[0]
+    response = urllib.parse.quote_plus(response) # urllib.parse.quote_plus(text) # (python3)
+    url = URL + "sendMessage?text={}&chat_id={}".format(response, chat_id)
     get_url(url)
 
 
