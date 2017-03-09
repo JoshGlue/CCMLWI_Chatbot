@@ -93,9 +93,10 @@ def pad_seq(seq, lookup, maxlen):
   word to index dictionaries
     return tuple( vocab->(word, count), idx2w, w2idx )
 '''
-def index_(tokenized_sentences):
+def index_(tokenized_sentences, freq_dist =None):
     # get frequency distribution
-    freq_dist = nltk.FreqDist(itertools.chain(*tokenized_sentences))
+    if freq_dist is None:
+        freq_dist = nltk.FreqDist(itertools.chain(*tokenized_sentences))
     # get vocabulary of 'vocab_size' most used words
     vocab = freq_dist.most_common(VOCAB_SIZE)
     # index2word
@@ -151,7 +152,10 @@ def preprocess_data():
 
     # get frequency distribution
     print("Getting indexes and frequency distribution")
-    idx2w, w2idx, freq_dist = index_(all_filt)
+
+    with open('seq2seq/datasets/twitter/metadata.pkl', 'rb') as f:
+        metadata = pickle.load(f)
+    idx2w, w2idx, freq_dist = index_(all_filt, freq_dist=metadata['freq_dist'])
 
     print("Zero Padding")
     idx_simp_q, idx_simp_a = zero_pad(q_simp_filt, a_simp_filt, w2idx)

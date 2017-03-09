@@ -70,6 +70,7 @@ def send_message(text, chat_id):
         response = np.random.choice(exception_phrases, 1)[0]
     response = urllib.parse.quote_plus(response) # urllib.parse.quote_plus(text) # (python3)
     url = URL + "sendMessage?text={}&chat_id={}".format(response, chat_id)
+    print("received message: {}, from: {}, responded: {}".format(text, chat_id, response))
     get_url(url)
 
 
