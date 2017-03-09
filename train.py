@@ -11,7 +11,7 @@ import pickle
 
 def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
-    p = numpy.random.permutation(len(a))
+    p = np.random.permutation(len(a))
     return a[p], b[p]
 
 def load_data(PATH='', concatenate=False, multiple_simpson=5):
@@ -40,7 +40,7 @@ def load_data(PATH='', concatenate=False, multiple_simpson=5):
 
 
 # load data from pickle and npy files
-metadata, idx_q, idx_a = load_data(PATH='')
+metadata, idx_q, idx_a = load_data(PATH='', concatenate=True)
 (trainX, trainY), (testX, testY), (validX, validY) = data_utils.split_dataset(idx_q, idx_a)
 
 # parameters 
@@ -60,7 +60,7 @@ model = seq2seq_wrapper.Seq2Seq(xseq_len=xseq_len,
                                yseq_len=yseq_len,
                                xvocab_size=xvocab_size,
                                yvocab_size=yvocab_size,
-                               ckpt_path='ckpt/twitter/',
+                               ckpt_path='ckpt/homer/',
                                emb_dim=emb_dim,
                                num_layers=3
                                )
