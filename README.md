@@ -1,6 +1,6 @@
 # CCMLWI_Chatbot
 
-### Prequisites:
+### Prerequisites:
 - Python 3
 - Tensorflow 0.12
 
