@@ -155,7 +155,7 @@ def preprocess_data():
 
     with open('seq2seq/datasets/twitter/metadata.pkl', 'rb') as f:
         metadata = pickle.load(f)
-    idx2w, w2idx, freq_dist = index_(all_filt, freq_dist=metadata['freq_dist'])
+    idx2w, w2idx, freq_dist = index_(all_filt)
 
     print("Zero Padding")
     idx_simp_q, idx_simp_a = zero_pad(q_simp_filt, a_simp_filt, w2idx)

@@ -18,7 +18,7 @@ def load_data(PATH='', concatenate=False, multiple_simpson=5):
 	# When concatenate is true, then the simpson and cornell datasets will be merged.
 	# The multiple_simpson parameter determines how many time the simpson dataset need to be concatenated
     # read data control dictionaries
-    with open(PATH + 'seq2seq/datasets/twitter/metadata.pkl', 'rb') as f:
+    with open(PATH + 'metadata.pkl', 'rb') as f:
         metadata = pickle.load(f)
     # read numpy arrays
     idx_q = np.load(PATH + 'idx_simp_q.npy')
@@ -26,7 +26,7 @@ def load_data(PATH='', concatenate=False, multiple_simpson=5):
 
     if concatenate:
     	idx_cornell_q = np.load(PATH + 'idx_corn_q.npy')
-    	idx_cornell_a = np.load(PATH + 'idx_corn_q.npy')
+    	idx_cornell_a = np.load(PATH + 'idx_corn_a.npy')
     	arrays_q = [idx_cornell_q]
     	arrays_a = [idx_cornell_a]
     	for i in range(multiple_simpson):
@@ -36,6 +36,7 @@ def load_data(PATH='', concatenate=False, multiple_simpson=5):
     	idx_q = np.concatenate(arrays_q)
     	idx_a = np.concatenate(arrays_a)
     	idx_q, idx_a = unison_shuffled_copies(idx_q, idx_a)
+    print(idx_q.shape)
     return metadata, idx_q, idx_a
 
 
