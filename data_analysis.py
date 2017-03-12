@@ -13,6 +13,7 @@ import pandas as pd
 from load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
 from collections import Counter
 import math
+from preprocess_data import filter_line, basic_tokenizer
 
 cornell_lines_path = "./data/movie_lines.txt"
 cornell_conversations = "./data/movie_conversations.txt"
@@ -20,107 +21,109 @@ simpsons_path = "./data/simpsons_script_lines.csv"
 
 # Count for the length of the sequences.
 
-num_bins = 30
-_WORD_SPLIT = re.compile("([.,!?\"':;)(])")
-
-def basic_tokenizer(sentence):
-  """Very basic tokenizer: split the sentence into a list of tokens."""
-  words = []
-  for space_separated_fragment in sentence.strip().split():
-    words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
-  return [w for w in words if w]
+num_bins = range(1, 30)
 
 
 def main():
-    # try:
-    #     dataset = load_cornell_from_file()
-    # except FileNotFoundError:
-    #     dataset = load_cornell(output_file=True)
+
+    # print("Analysing The Simpsons dataset...")
+    print("Loading The Simpsons Dataset...")
+    try:
+        dataset_simp = load_simpsons_from_file()
+    except FileNotFoundError:
+        dataset_simp = load_simpsons(output_file=True)
+
+    questions_simp = dataset_simp.question
+    answers_simp = dataset_simp.answer
+    # target_lengths = [ len(basic_tokenizer(line)) for line in answers_simp]
+    # source_lengths = [ len(basic_tokenizer(line)) for line in questions_simp]
     #
-    # questions = dataset.question
-    # answers = dataset.answer
-    # target_lengths = [ len(basic_tokenizer(line)) for line in answers]
-    # source_lengths = [ len(basic_tokenizer(line)) for line in questions]
-    #
-    # #if FLAGS.plot_histograms:
     # plotHistoLengths("target lengths", target_lengths)
     # plotHistoLengths("source_lengths", source_lengths)
     # plotScatterLengths("target vs source length", "source length", "target length", source_lengths, target_lengths)
 
 
     ############################################
+    # print("Analysing Cornell Movies dataset...")
 
+    print("Loading the Cornell Movies Dataset...")
     try:
-        dataset = load_simpsons_from_file()
+        dataset_corn = load_cornell_from_file()
     except FileNotFoundError:
-        dataset = load_simpsons(output_file=True)
+        dataset_corn = load_cornell(output_file=True)
 
-    questions = dataset.question
-    answers = dataset.answer
-    target_lengths = [len(basic_tokenizer(line)) for line in answers]
-    source_lengths = [len(basic_tokenizer(line)) for line in questions]
+    questions_corn = dataset_corn.question
+    answers_corn = dataset_corn.answer
+    # target_lengths = [len(basic_tokenizer(line)) for line in answers_corn]
+    # source_lengths = [len(basic_tokenizer(line)) for line in questions_corn]
+    #
+    # plotHistoLengths("target lengths", target_lengths)
+    # plotHistoLengths("source_lengths", source_lengths)
+    # plotScatterLengths("target vs source length", "source length", "target length", source_lengths, target_lengths)
+
+    ############################################
+
+    print("Statistics for both datasets together...")
+    all_q = np.concatenate((np.array(questions_simp), np.array(questions_corn)), axis=0)
+    all_a = np.concatenate((np.array(answers_simp), np.array(answers_corn)), axis=0)
+    all_data = np.concatenate((all_q, all_a), axis=0)
+
+    target_lengths = [len(basic_tokenizer(line)) for line in all_a]
+    source_lengths = [len(basic_tokenizer(line)) for line in all_q]
+
+    plotHistoLengths("Answer lengths", target_lengths)
+    plotHistoLengths("Question_lengths", source_lengths)
+    plotScatterLengths("Answer vs Question length", "Question length", "Answer length", source_lengths, target_lengths)
 
 
-    # if FLAGS.plot_histograms:
-    plotHistoLengths("target lengths", target_lengths)
-    plotHistoLengths("source_lengths", source_lengths)
-    plotScatterLengths("target vs source length", "source length", "target length", source_lengths, target_lengths)
-
-    count_word_frequency()
+    print("Calculating word frecuency...")
+    count_word_frequency(all_data)
 
 def plotScatterLengths(title, x_title, y_title, x_lengths, y_lengths):
 	plt.scatter(x_lengths, y_lengths)
 	plt.title(title)
 	plt.xlabel(x_title)
 	plt.ylabel(y_title)
-	#plt.ylim(0, max(y_lengths))
-	#plt.xlim(0,max(x_lengths))
+
 	plt.ylim(0, 200)
 	plt.xlim(0, 200)
 	plt.show()
 
 def plotHistoLengths(title, lengths):
 	x = np.array(lengths)
-	plt.hist(x,  num_bins, alpha=0.5)
+	plt.hist(x,  bins=num_bins, rwidth=1)
 	plt.title(title)
 	plt.xlabel("Length")
 	plt.ylabel("Number of Sequences")
 	plt.xlim(0,80)
 	plt.show()
 
-def count_word_frequency():
-    try:
-        dataset = load_simpsons_from_file()
-    except FileNotFoundError:
-        dataset = load_simpsons(output_file=True)
-    questions = dataset.question
-    answers = dataset.answer
+def count_word_frequency(dataset):
+
     raw_words = []
-    for q,a in zip(questions, answers):
-        q_words = str(q).split()
-        a_words = str(a).split()
-        for word in q_words:
-            raw_words.append(word)
-        for word in a_words:
+    print(">> Letters to lower case and eliminate characters in the black list...")
+    for line in dataset:
+        # All sentences to lower case
+        line = str(line).lower()
+        # Eliminate characters that are not in the white list.
+        line = filter_line(line)
+        line = str(line).split()
+        for word in line:
             raw_words.append(word)
 
-    print("Number of words: %d " % len(raw_words))
-    simpsons_vocabulary = set(raw_words)
-    corpus_vocab = Counter(raw_words)
-    print("Size of vocabulary in the Simpsons: %d " % len(simpsons_vocabulary))
+    print("Total number of words: %d " % len(raw_words))
+    vocabulary = set(raw_words)
+    print("Size of vocabulary: %d " % len(vocabulary))
 
     # Get all the words the occur only once for the given wordlist
-    desired_value = 1
+    desired_value = 3
     myDict = dict(Counter(raw_words))
-    hapax_legomena_unsorted = [k for k, v in myDict.items() if v == desired_value]
+    hapax_legomena_unsorted = [k for k, v in myDict.items() if v <= desired_value]
     hapax_legomena = sorted(hapax_legomena_unsorted)
-    print("Hapax legomena in the corpus: %d " % len(hapax_legomena))
+    print("Words that appear 3 times or less: %d " % len(hapax_legomena))
 
 
 if __name__=="__main__":
 	main()
-
-
-# Count for the frecuency of each word.
 
 

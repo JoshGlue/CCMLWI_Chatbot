@@ -1,47 +1,44 @@
 import pandas as pd
-from random import randint
-
+import sys
+import os
 
 SIMPSONS_PATH = "./data/simpsons_script_lines.csv"
 CORNELL_LINES_PATH = "./data/movie_lines.txt"
 CORNELL_CONVERSATIONS_PATH = "./data/movie_conversations.txt"
 CORNELL_DELIMITER = " +++$+++ "
-OUT_SIMP_PATH = "./homer_context.csv"
-OUT_CORN_PATH = "./cornell_q_a.csv"
+OUT_PATH = "./usable_data/"
+OUT_SIMP_PATH = OUT_PATH + "homer_context.csv"
+OUT_CORN_PATH = OUT_PATH + "cornell_q_a.csv"
 
 def load_simpsons(output_file=False):
     homer_id = 2
     context_distance = 1
     row_name = 'spoken_words'
 
+    if not os.path.exists(OUT_PATH):
+        os.makedirs(OUT_PATH)
+
     df = pd.read_csv(SIMPSONS_PATH, delimiter=',', error_bad_lines=False)
     df_homer = df[df['character_id'] == homer_id]
-    df_context = pd.DataFrame(columns=["question", "answer", "Label"])
+    df_context = pd.DataFrame(columns=["question", "answer"])
     i = 0
-    j=0
     print('Loading Simpsons Dataset')
     for index, row in df_homer.iterrows():
+        if i % 1000 == 0:
+            print("Progress: {}%\r".format(100 * (i / float(len(df_homer.index)))))
         line = str(row[row_name])
-        if not line=='nan':
-            j += 1
-            print("Progress: {}%".format(100*(j/float(len(df_homer.index)))))
+        if not line == 'nan':
             context_range = range(index - context_distance, index)
-            context_positive = ["", row[row_name], 1]
-            context_negative = ["", row[row_name],0]
+            context = ["", row[row_name]]
             for ix in context_range:
-                context_positive_sentence = str(df.loc[ix][row_name])
-                if not context_positive_sentence == "nan":
-                    context_positive[0] += context_positive_sentence +  " "
+                context_positive = str(df.loc[ix][row_name])
+                if not context_positive == "nan":
+                    context[0] += context_positive + " "
                 else:
-                    context_positive = ''
-                context_negative_sentence = str(df.loc[randint(0,len(df.index)-1)][row_name])
-                if not context_negative_sentence == "nan":
-                    context_negative[0] += context_negative_sentence + " "
-                context_negative[0] += str(df.loc[randint(0,len(df.index)-1)][row_name]) + " "
-            if not context_positive == '':
-                df_context.loc[i] = context_positive
-            df_context.loc[i] = context_negative
-        i+= 2
+                    context = ''
+            if not context == '':
+                df_context.loc[i] = context
+        i += 1
     print('Loading Simpsons Dataset - Done')
 
     if output_file:
@@ -78,19 +75,18 @@ def _get_convs():
 
 
 def load_cornell(output_file=False):
-    out_corn_path = "./cornell_q_a.csv"
 
-    print('Loading Cornell Movies Dataset')
+    if not os.path.exists(OUT_PATH):
+        os.makedirs(OUT_PATH)
+
     id_and_lines = _get_id_and_lines()
     convs = _get_convs()
 
-    df_q_and_a = pd.DataFrame(columns=["Question", "Answer"])
     q_and_a = []
 
     j = 0
     k = 0
     for conv in convs:
-        print("Progress: {}%".format(100*(j/float(len(convs)))))
         for i in range(0,len(conv)-1):
             line1 = id_and_lines[conv[i]]
             line2 = id_and_lines[conv[i+1]]
@@ -98,17 +94,13 @@ def load_cornell(output_file=False):
             q_and_a.append([line1, line2])
             k+=1
         j+=1
-
-    print("Progress: {}%".format(100 * (j / float(len(convs)))))
+    if i % 1000 == 0:
+        print("Progress: {}%".format(100 * (j / float(len(convs)))))
     df_q_and_a = pd.DataFrame(q_and_a, columns=['question', 'answer'])
     if output_file:
-        df_q_and_a.to_csv(out_corn_path)
+        df_q_and_a.to_csv(OUT_CORN_PATH)
 
-    print('Loading the Cornell Movies Dataset - Done')
     return df_q_and_a
 
 def load_cornell_from_file():
     return pd.read_csv(OUT_CORN_PATH)
-
-#load_simpsons(output_file=True)
-#load_cornell(output_file=True)

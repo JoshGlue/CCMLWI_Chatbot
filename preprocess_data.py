@@ -1,21 +1,35 @@
-from data_analysis import basic_tokenizer
 import nltk
 import itertools
 import numpy as np
 import pickle
 from load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
+import os
+import re
 
-WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
+WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz .?!' # space is included in whitelist
 
 limit = {
     'maxq': 20,
-    'minq': 2,
+    'minq': 1,
     'maxa': 20,
-    'mina': 2
+    'mina': 1
 }
 
 UNK = 'unk'
-VOCAB_SIZE = 6000
+VOCAB_SIZE = 10000
+
+path_to_variables = "./variables/"
+
+_WORD_SPLIT = re.compile("([.,!?\"':;)(])")
+
+def basic_tokenizer(sentence):
+  """Very basic tokenizer: split the sentence into a list of tokens."""
+  words = []
+  if isinstance(sentence, float):   # In case the sentence is just a number.
+      sentence = str(sentence)
+  for space_separated_fragment in sentence.strip().split():
+    words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
+  return [w for w in words if w]
 
 '''
  remove anything that isn't in the vocabulary
@@ -63,8 +77,6 @@ def zero_pad(qtokenized, atokenized, w2idx):
         q_indices = pad_seq(qtokenized[i], w2idx, limit['maxq'])
         a_indices = pad_seq(atokenized[i], w2idx, limit['maxa'])
 
-        # print(len(idx_q[i]), len(q_indices))
-        # print(len(idx_a[i]), len(a_indices))
         idx_q[i] = np.array(q_indices)
         idx_a[i] = np.array(a_indices)
 
@@ -89,11 +101,11 @@ def pad_seq(seq, lookup, maxlen):
     return indices + [0] * (maxlen - len(seq))
 
 '''
- read list of words, create index to word,
+ Read list of words, create index to word,
   word to index dictionaries
     return tuple( vocab->(word, count), idx2w, w2idx )
 '''
-def index_(tokenized_sentences, freq_dist =None):
+def index_(tokenized_sentences, freq_dist = None):
     # get frequency distribution
     if freq_dist is None:
         freq_dist = nltk.FreqDist(itertools.chain(*tokenized_sentences))
@@ -108,42 +120,48 @@ def index_(tokenized_sentences, freq_dist =None):
 
 def preprocess_data():
 
-    print("Loading and basic preprocessing The Simpsons Dataset")
+    print("Loading The Simpsons Dataset...")
 
     try:
         data_simp = load_simpsons_from_file()
     except FileNotFoundError:
         data_simp = load_simpsons(output_file=True)
 
+    print("Preprocessing The Simpsons Dataset...")
+
     q_simp = data_simp.question
-    q_simp = [ch.lower() for ch in q_simp]
+    # All sentences to lower case
+    q_simp = [line.lower() for line in q_simp]
+    # Eliminate characters that are not in the white list.
     q_simp = [ filter_line(line) for line in q_simp ]
     a_simp = data_simp.answer
-    a_simp = [ch.lower() for ch in a_simp]
+    a_simp = [line.lower() for line in a_simp]
     a_simp = [ filter_line(line) for line in a_simp ]
     q_simp_tok = [basic_tokenizer(line) for line in q_simp]
     a_simp_tok = [basic_tokenizer(line) for line in a_simp]
     all_simp_tok = np.concatenate((np.array(q_simp_tok), np.array(a_simp_tok)), axis=0)
 
-    print("Loading and basic preprocessing Cornell Movies Dataset")
+    print("Loading the Cornell Movies Dataset...")
 
     try:
         data_corn = load_cornell_from_file()
     except FileNotFoundError:
         data_corn = load_cornell(output_file=True)
 
+    print("Preprocessing the Cornell Movies Dataset...")
+
     q_corn = data_corn.question
-    q_corn = [str(ch).lower() for ch in q_corn]
+    q_corn = [str(line).lower() for line in q_corn]
     q_corn = [ filter_line(line) for line in q_corn ]
     a_corn = data_corn.answer
-    a_corn = [str(ch).lower() for ch in a_corn]
+    a_corn = [str(line).lower() for line in a_corn]
     a_corn = [ filter_line(line) for line in a_corn ]
     q_corn_tok = [basic_tokenizer(line) for line in q_corn]
     a_corn_tok = [basic_tokenizer(line) for line in a_corn]
     all_corn_tok = np.concatenate((np.array(q_corn_tok), np.array(a_corn_tok)), axis=0)
 
     # Filter by size
-    print("Filtering sentences by size")
+    print("Filtering sentences by size...")
     q_simp_filt, a_simp_filt = filter_data(all_simp_tok)
     all_simp_filt = np.concatenate((np.array(q_simp_filt), np.array(a_simp_filt)), axis=0)
     q_corn_filt, a_corn_filt = filter_data(all_corn_tok)
@@ -151,23 +169,25 @@ def preprocess_data():
     all_filt = np.concatenate((np.array(all_corn_filt), np.array(all_simp_filt)), axis=0)
 
     # get frequency distribution
-    print("Getting indexes and frequency distribution")
-
-    with open('seq2seq/datasets/twitter/metadata.pkl', 'rb') as f:
-        metadata = pickle.load(f)
+    print("Genereting word indexes and frequency distribution...")
     idx2w, w2idx, freq_dist = index_(all_filt)
 
-    print("Zero Padding")
+    print("Applying zero padding...")
     idx_simp_q, idx_simp_a = zero_pad(q_simp_filt, a_simp_filt, w2idx)
     idx_corn_q, idx_corn_a = zero_pad(q_corn_filt, a_corn_filt, w2idx)
 
 
-    print('\n >> Save numpy arrays to disk')
+    print('Saving information to disk')
+    print('Total number of question-answer cases for the Cornell Movies dataset: {}'.format(len(idx_corn_q)))
+    print('Total number of question-answer cases for The Simpsons dataset: {}'.format(len(idx_simp_q)))
+    if not os.path.exists(path_to_variables):
+        os.makedirs(path_to_variables)
+
     # save them
-    np.save('idx_simp_q.npy', idx_simp_q)
-    np.save('idx_simp_a.npy', idx_simp_a)
-    np.save('idx_corn_q.npy', idx_corn_q)
-    np.save('idx_corn_a.npy', idx_corn_a)
+    np.save(path_to_variables+'idx_simp_q.npy', idx_simp_q)
+    np.save(path_to_variables+'idx_simp_a.npy', idx_simp_a)
+    np.save(path_to_variables+'idx_corn_q.npy', idx_corn_q)
+    np.save(path_to_variables+'idx_corn_a.npy', idx_corn_a)
 
     # let us now save the necessary dictionaries
     metadata = {
@@ -178,8 +198,5 @@ def preprocess_data():
     }
 
     # write to disk : data control dictionaries
-    with open('metadata.pkl', 'wb') as f:
+    with open(path_to_variables+'metadata.pkl', 'wb') as f:
         pickle.dump(metadata, f)
-
-
-preprocess_data()

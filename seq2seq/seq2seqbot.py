@@ -22,6 +22,7 @@ model = seq2seq_wrapper.Seq2Seq(xseq_len=xseq_len,
                                num_layers=3
                                )
 sess = model.restore_last_session()
+
 def send_message(text, chat_id):
 	text = text.lower()
 	with open('seq2seq/datasets/twitter/metadata.pkl', 'rb') as f:
