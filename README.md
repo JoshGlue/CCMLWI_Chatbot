@@ -1,6 +1,7 @@
 # Homer Simpson Chatbot
 ![Homer](http://www.3ders.org/images2015/mythbusters-3d-models-homer-simpson-new-experiment-00005.png)
-We created a chatbot that tries to mimic the famous Homer Simpson. When a message is send to Homer, it responds with generated sentences based on script lines of the Simpsons.
+
+We created a chatbot that tries to mimic the famous Homer Simpson. When a message is send to the Homer chatbot, it responds with generated sentences based on script lines of the Simpsons and the context of the sent message.
 
 ## Data
 There has been made use of two datasets to enhance the dictionary of the embeddings that are used. The first dataset that is used is "The Simpsons by the Data" dataset, that can be found on Kaggle (https://www.kaggle.com/wcukierski/the-simpsons-by-the-data). This dataset consists of all locations, episodes, characters and the script lines. The latter is used for training our model. The second dataset that is used is the Cornell Movie-Dialogs Corpus, which can be found here: https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html. This dataset consists of 300K utterances of different movies.
@@ -17,7 +18,7 @@ The preprocessing that we chose are the following:
 Both datasets that we used had only spoken lines in the dataset, so there was no need to do special preprocessing steps to remove exclamations or something.
 
 
-The data needs to be put in in the following format:
+The data needs to be converted in the following format:
 
 **Question** | **Answer**
 ---|---
