@@ -161,7 +161,7 @@ class Seq2Seq(object):
         saver = tf.train.Saver()
         # create a session
         sess = tf.Session()
-        sess.run(tf.global_variable)
+        sess.run(tf.global_variables_initializer())
         # get checkpoint state
         ckpt = tf.train.get_checkpoint_state(self.ckpt_path)
         # restore session

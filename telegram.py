@@ -9,6 +9,7 @@ import urllib
 import config
 import traceback
 import numpy as np
+import seq2seq.seq2seqbot as bot
 # python3: urllib.parse.quote_plus
 # python2: urllib.pathname2url
 

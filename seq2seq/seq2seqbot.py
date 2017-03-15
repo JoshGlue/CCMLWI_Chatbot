@@ -9,7 +9,7 @@ from . import seq2seq_wrapper, data_utils
 '''
 Loads and returns the metadata used for the training of our Chatbox.
 '''
-def load_model_metadata(PATH='../variables/'):
+def load_model_metadata(PATH='variables/'):
     with open(PATH + 'metadata.pkl', 'rb') as f:
         metadata = pickle.load(f)
 
