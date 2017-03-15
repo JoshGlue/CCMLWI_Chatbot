@@ -3,16 +3,10 @@
 #
 
 
-import os
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
-import sys
 import numpy as np
-import re
-import pandas as pd
 from load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
 from collections import Counter
-import math
 from preprocess_data import filter_line, basic_tokenizer
 
 cornell_lines_path = "./data/movie_lines.txt"
@@ -35,12 +29,12 @@ def main():
 
     questions_simp = dataset_simp.question
     answers_simp = dataset_simp.answer
-    # target_lengths = [ len(basic_tokenizer(line)) for line in answers_simp]
-    # source_lengths = [ len(basic_tokenizer(line)) for line in questions_simp]
-    #
-    # plotHistoLengths("target lengths", target_lengths)
-    # plotHistoLengths("source_lengths", source_lengths)
-    # plotScatterLengths("target vs source length", "source length", "target length", source_lengths, target_lengths)
+    target_lengths = [ len(basic_tokenizer(line)) for line in answers_simp]
+    source_lengths = [ len(basic_tokenizer(line)) for line in questions_simp]
+
+    plotHistoLengths("Answers length - The Simpsons", target_lengths)
+    plotHistoLengths("Questions lengths  - The Simpsons", source_lengths)
+    plotScatterLengths("Answers vs. Questions length - The Simpsons", "Question length", "Answer length", source_lengths, target_lengths)
 
 
     ############################################
@@ -57,9 +51,9 @@ def main():
     # target_lengths = [len(basic_tokenizer(line)) for line in answers_corn]
     # source_lengths = [len(basic_tokenizer(line)) for line in questions_corn]
     #
-    # plotHistoLengths("target lengths", target_lengths)
-    # plotHistoLengths("source_lengths", source_lengths)
-    # plotScatterLengths("target vs source length", "source length", "target length", source_lengths, target_lengths)
+    # plotHistoLengths("Answers length - Cornell Movies", target_lengths)
+    # plotHistoLengths("Questions length - Cornell Movies")
+    # plotScatterLengths("Answers vs. Questions length - Cornell Movies", "Question length", "Answer length", source_lengths, target_lengths)
 
     ############################################
 
@@ -71,9 +65,9 @@ def main():
     target_lengths = [len(basic_tokenizer(line)) for line in all_a]
     source_lengths = [len(basic_tokenizer(line)) for line in all_q]
 
-    plotHistoLengths("Answer lengths", target_lengths)
-    plotHistoLengths("Question_lengths", source_lengths)
-    plotScatterLengths("Answer vs Question length", "Question length", "Answer length", source_lengths, target_lengths)
+    plotHistoLengths("Answer lengths - The Simpsons and Cornell Movies", target_lengths)
+    plotHistoLengths("Question lengths - The Simpsons and Cornell Movies", source_lengths)
+    plotScatterLengths("Answer vs Question length - The Simpsons and Cornell Movies", "Question length", "Answer length", source_lengths, target_lengths)
 
 
     print("Calculating word frecuency...")
@@ -101,7 +95,7 @@ def plotHistoLengths(title, lengths):
 def count_word_frequency(dataset):
 
     raw_words = []
-    print(">> Letters to lower case and eliminate characters in the black list...")
+    print(" Preprocessing the sentences...")
     for line in dataset:
         # All sentences to lower case
         line = str(line).lower()

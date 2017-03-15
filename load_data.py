@@ -1,5 +1,4 @@
 import pandas as pd
-import sys
 import os
 
 SIMPSONS_PATH = "./data/simpsons_script_lines.csv"
@@ -9,9 +8,22 @@ CORNELL_DELIMITER = " +++$+++ "
 OUT_PATH = "./usable_data/"
 OUT_SIMP_PATH = OUT_PATH + "homer_context.csv"
 OUT_CORN_PATH = OUT_PATH + "cornell_q_a.csv"
+CHARACTER_ID = 2    # 2 Is the character ID of Homer Simpson.
+
+#####################################
+# The Simpsons Dataset
+#####################################
+
+'''
+Given the original file of the dataset "The Simpsons by the Data", it gets and returns all the sentences said by
+CHARACTER_ID (that will be marked as answers) together with the line of dialog preceding that sentence (questions).
+
+If output_file is 'True', then the new data is stored in a file so we do not have to perform this operation again.
+
+Original dataset: https://www.kaggle.com/wcukierski/the-simpsons-by-the-data
+'''
 
 def load_simpsons(output_file=False):
-    homer_id = 2
     context_distance = 1
     row_name = 'spoken_words'
 
@@ -19,7 +31,7 @@ def load_simpsons(output_file=False):
         os.makedirs(OUT_PATH)
 
     df = pd.read_csv(SIMPSONS_PATH, delimiter=',', error_bad_lines=False)
-    df_homer = df[df['character_id'] == homer_id]
+    df_homer = df[df['character_id'] == CHARACTER_ID]
     df_context = pd.DataFrame(columns=["question", "answer"])
     i = 0
     print('Loading Simpsons Dataset')
@@ -46,10 +58,20 @@ def load_simpsons(output_file=False):
 
     return df_context
 
+"Loads ans already existing file that stores pairs of Question-Answers"
+
 def load_simpsons_from_file():
     return pd.read_csv(OUT_SIMP_PATH)
 
 
+#####################################
+# Cornell Movies Dataset
+#####################################
+
+'''
+    From the "movie_lines.txt" of the original 'Cornell Movie Dialogs Dataset', it gets all the ID and spoken dialog of
+    the conversations.
+'''
 def _get_id_and_lines():
     lines = open(CORNELL_LINES_PATH).read().split('\n')
     id_and_lines = {}
@@ -61,8 +83,8 @@ def _get_id_and_lines():
 
 
 '''
-    1. Read from 'movie_conversations.txt'
-    2. Create a list of [list of line_id's]
+    1. From 'movie_conversations.txt' of the original 'Cornell Movie Dialogs Dataset', it gets all the conversations of
+    the dataset (each sentence is represented by the ID of the spoken sentence).
 '''
 
 def _get_convs():
@@ -73,6 +95,15 @@ def _get_convs():
         convs.append(split_line.split(','))
     return convs
 
+
+'''
+Given the original file of the dataset "Cornell Movie Dialogs Dataset", it puts together all the possible conversations
+and creates pairs of Question-Answer where the 'question' is the line immediately after an 'answer'.
+
+If output_file is 'True', then the new data is stored in a file so we do not have to perform this operation again.
+
+Original dataset: https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html
+'''
 
 def load_cornell(output_file=False):
 
@@ -101,6 +132,8 @@ def load_cornell(output_file=False):
         df_q_and_a.to_csv(OUT_CORN_PATH)
 
     return df_q_and_a
+
+"Loads ans already existing file that stores pairs of Question-Answers"
 
 def load_cornell_from_file():
     return pd.read_csv(OUT_CORN_PATH)
