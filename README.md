@@ -1,5 +1,5 @@
 # Homer Simpson Chatbot
-![Homer](http://www.3ders.org/images2015/mythbusters-3d-models-homer-simpson-new-experiment-00005.png)
+![Homer](https://t5.rbxcdn.com/ada14fa25d160f31ad9bec419dec2d9e)
 
 We created a chatbot that tries to mimic the famous Homer Simpson's way of speaking and personality. When a message is send to the Homer chatbot, it responds with generated sentences based on script lines of the Simpsons and the context of the sent message.
 
@@ -66,3 +66,6 @@ https://www.tensorflow.org/versions/r0.12/get_started/os_setup
 1. Train the model as described in the previous section or download the pretrained model [LINK NEEDED](LINK NEEDED)
 2. Run `python ./telegram.py`
 3. Add bot http://t.me/RUSimpsonBot to telegram and send a message to Homer.
+
+## Screenshot Conversation
+![screenshot](screenshot.png)
