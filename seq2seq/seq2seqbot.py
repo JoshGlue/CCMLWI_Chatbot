@@ -1,3 +1,6 @@
+
+from . import seq2seq_wrapper, data_utils 
+import numpy as np
 import pickle
 
 from preproc import preprocess_data as prep_data
@@ -13,7 +16,6 @@ def load_model_metadata(PATH='../variables/'):
     return metadata
 
 metadata = load_model_metadata()
-
 # parameters 
 xseq_len = 20
 yseq_len = 20
