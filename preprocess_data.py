@@ -208,3 +208,5 @@ def preprocess_data():
     # write to disk : data control dictionaries
     with open(path_to_variables+'metadata.pkl', 'wb') as f:
         pickle.dump(metadata, f)
+
+    return idx_simp_q, idx_simp_a, idx_corn_q, idx_corn_a, metadata

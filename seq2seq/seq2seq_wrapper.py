@@ -145,7 +145,7 @@ class Seq2Seq(object):
                 print("epoch: {}/{}, Loss: {}".format(i, self.epochs, loss))
                 if i and i% (self.epochs//200) == 0: # TODO : make this tunable by the user
                     # save model to disk
-                    saver.save(sess, self.ckpt_path + self.model_name + '.ckpt', global_step=i)
+                    saver.save(sess, self.ckpt_path + self.model_name + '.ckpt')
                     # evaluate to get validation loss
                     val_loss = self.eval_batches(sess, valid_set, 16) # TODO : and this
                     # print stats
