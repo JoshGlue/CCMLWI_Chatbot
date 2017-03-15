@@ -36,6 +36,18 @@ def basic_tokenizer(sentence):
   return [w for w in words if w]
 
 '''
+    Given a set of sentences, it converts them all to lowercase, deletes invalid characters and tokenize.
+    Returns the set after this operations has been performed.
+'''
+def basic_preproc(data):
+    # All sentences to lower case
+    q_simp = [line.lower() for line in data]
+    # Eliminate characters that are not in the white list.
+    q_simp = [ filter_line(line) for line in q_simp ]
+    q_simp_tok = [basic_tokenizer(line) for line in q_simp]
+    return q_simp_tok
+
+'''
 Given a sentence, it deletes all the characters that are not in the WHITELIST.
 '''
 def filter_line(sentence):
@@ -140,10 +152,8 @@ def preprocess_data():
     print("Basic preprocessing The Simpsons Dataset...")
 
     q_simp = data_simp.question
-    # All sentences to lower case
-    q_simp = [line.lower() for line in q_simp]
-    # Eliminate characters that are not in the white list.
-    q_simp = [ filter_line(line) for line in q_simp ]
+
+    # Repeat steps with the answers
     a_simp = data_simp.answer
     a_simp = [line.lower() for line in a_simp]
     a_simp = [ filter_line(line) for line in a_simp ]
@@ -172,9 +182,9 @@ def preprocess_data():
 
     # Filter by size
     print("Filtering sentences by size...")
-    q_simp_filt, a_simp_filt = filter_data(q_simp, a_simp)
+    q_simp_filt, a_simp_filt = filter_data(q_simp_tok, a_simp_tok)
     all_simp_filt = np.concatenate((np.array(q_simp_filt), np.array(a_simp_filt)), axis=0)
-    q_corn_filt, a_corn_filt = filter_data(q_corn, a_corn)
+    q_corn_filt, a_corn_filt = filter_data(q_corn_tok, a_corn_tok)
     all_corn_filt = np.concatenate((np.array(q_corn_filt), np.array(a_corn_filt)), axis=0)
     all_filt = np.concatenate((np.array(all_corn_filt), np.array(all_simp_filt)), axis=0)
 
@@ -212,3 +222,5 @@ def preprocess_data():
         pickle.dump(metadata, f)
 
     return idx_simp_q, idx_simp_a, idx_corn_q, idx_corn_a, metadata
+
+preprocess_data()
