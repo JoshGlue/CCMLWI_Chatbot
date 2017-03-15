@@ -2,7 +2,7 @@ import nltk
 import itertools
 import numpy as np
 import pickle
-from load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
+from preproc.load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
 import os
 import re
 

@@ -42,9 +42,9 @@ Given a sentence, it feeds it to the Chatbox seq2seq model and outputs its respo
 '''
 def send_message(text, chat_id):
 	text = text.lower()
-	text = prep_data.filter_line(text, prep_data.EN_WHITELIST)
+	text = prep_data.filter_line(text)
 	text_tokenized = text.split(' ')
-	idx2w, w2idx, freq_dist = prep_data.index_([text_tokenized], vocab_size=prep_data.VOCAB_SIZE, freq_dist=metadata['freq_dist'])
+	idx2w, w2idx, freq_dist = prep_data.index_([text_tokenized],freq_dist=metadata['freq_dist'])
 	idx_q, _ = prep_data.zero_pad([text_tokenized], [text_tokenized], w2idx)
 	output = model.predict(sess, idx_q.T)
 	decoded = data_utils.decode(sequence=output[0], lookup=metadata['idx2w'], separator=' ').split(' ')
