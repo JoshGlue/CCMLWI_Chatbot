@@ -56,3 +56,4 @@ https://www.tensorflow.org/versions/r0.12/get_started/os_setup
 ### Running the Chatbot
 1. Train the model as described in the previous section or download the pretrained model [LINK NEEDED](LINK NEEDED)
 2. Run `python ./telegram.py`
+3. Add bot http://t.me/RUSimpsonBot to telegram and send a message to Homer.
