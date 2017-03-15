@@ -158,6 +158,7 @@ class Seq2Seq(object):
                 return sess
 
     def restore_last_session(self):
+        is_new = 1  # Is the session new (1) or we are loading some pretrained parameters (0)
         saver = tf.train.Saver()
         # create a session
         sess = tf.Session()
@@ -167,8 +168,9 @@ class Seq2Seq(object):
         # restore session
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(sess, ckpt.model_checkpoint_path)
+            is_new = 0
         # return to user
-        return sess
+        return sess, is_new
 
     # prediction
     def predict(self, sess, X):

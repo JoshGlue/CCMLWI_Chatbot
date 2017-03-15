@@ -34,8 +34,12 @@ model = seq2seq_wrapper.Seq2Seq(xseq_len=xseq_len,
                                emb_dim=emb_dim,
                                num_layers=3
                                )
-sess = model.restore_last_session()
 
+sess, is_new = model.restore_last_session()
+# Raise an error if we could not find a checkpoint to load.
+if is_new:
+    raise Exception("You have not trained a model yet or the model could not be loaded. Check there is a checkpoint to"
+                    "load at " + path_model_ckpt)
 
 '''
 Given a sentence, it feeds it to the Chatbox seq2seq model and outputs its response.
