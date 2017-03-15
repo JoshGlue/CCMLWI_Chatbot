@@ -68,7 +68,7 @@ model = seq2seq_wrapper.Seq2Seq(xseq_len=xseq_len,
 val_batch_gen = data_utils.rand_batch_gen(validX, validY, 32)
 train_batch_gen = data_utils.rand_batch_gen(trainX, trainY, batch_size)
 # Train
-sess = model.restore_last_session()
+sess,_ = model.restore_last_session()
 sess = model.train(train_batch_gen, val_batch_gen, sess)
 
 ###########################
@@ -103,5 +103,5 @@ model = seq2seq_wrapper.Seq2Seq(xseq_len=xseq_len,
 val_batch_gen = data_utils.rand_batch_gen(validX, validY, 32)
 train_batch_gen = data_utils.rand_batch_gen(trainX, trainY, batch_size)
 # Create batches
-sess = model.restore_last_session()
+sess, _ = model.restore_last_session()
 sess = model.train(train_batch_gen, val_batch_gen)
