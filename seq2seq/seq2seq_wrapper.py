@@ -143,9 +143,9 @@ class Seq2Seq(object):
             try:
                 loss = self.train_batch(sess, train_set)
                 print("epoch: {}/{}, Loss: {}".format(i, self.epochs, loss))
-                if i and i% (self.epochs//200) == 0: # TODO : make this tunable by the user
+                if i and i% (1000) == 0: # TODO : make this tunable by the user
                     # save model to disk
-                    saver.save(sess, self.ckpt_path + self.model_name + '.ckpt', global_step=i)
+                    saver.save(sess, self.ckpt_path + self.model_name + '.ckpt')
                     # evaluate to get validation loss
                     val_loss = self.eval_batches(sess, valid_set, 16) # TODO : and this
                     # print stats
@@ -161,6 +161,7 @@ class Seq2Seq(object):
         saver = tf.train.Saver()
         # create a session
         sess = tf.Session()
+        sess.run(tf.global_variable)
         # get checkpoint state
         ckpt = tf.train.get_checkpoint_state(self.ckpt_path)
         # restore session

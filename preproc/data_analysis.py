@@ -3,11 +3,13 @@
 #
 
 
+from collections import Counter
+
 import matplotlib.pyplot as plt
 import numpy as np
-from load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
-from collections import Counter
 from preprocess_data import filter_line, basic_tokenizer
+
+from preproc.load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
 
 cornell_lines_path = "./data/movie_lines.txt"
 cornell_conversations = "./data/movie_conversations.txt"

@@ -7,7 +7,6 @@ import requests
 import time
 import urllib
 import config
-import seq2seq.seq2seqbot as bot
 import traceback
 import numpy as np
 # python3: urllib.parse.quote_plus

@@ -1,10 +1,12 @@
-import nltk
 import itertools
-import numpy as np
-import pickle
-from load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
 import os
+import pickle
 import re
+
+import nltk
+import numpy as np
+
+from preproc.load_data import load_cornell, load_cornell_from_file, load_simpsons_from_file,load_simpsons
 
 WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz .?!' # space is included in whitelist
 
@@ -46,7 +48,7 @@ fulfill the length requeriments.
 def filter_data(questions, answers):
     q_filt = []
     a_filt = []
-    for i in range(0, int(questions)):
+    for i in range(0, len(questions)):
         length1 = len(questions[i])
         length2 = len(answers[i])
         if length1 >= limit['minq'] and length1 <= limit['maxq']:
@@ -208,3 +210,5 @@ def preprocess_data():
     # write to disk : data control dictionaries
     with open(path_to_variables+'metadata.pkl', 'wb') as f:
         pickle.dump(metadata, f)
+
+    return idx_simp_q, idx_simp_a, idx_corn_q, idx_corn_a, metadata
