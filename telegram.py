@@ -64,7 +64,7 @@ def get_last_chat_id_and_text(updates):
 def send_message(text, chat_id):
     response = ""
     try:
-        response = bot.send_message(text, chat_id)
+        response = bot.send_message(text)
     except Exception as inst:
         traceback.print_exc()
         response = np.random.choice(exception_phrases, 1)[0]
