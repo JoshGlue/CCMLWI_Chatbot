@@ -63,9 +63,10 @@ https://www.tensorflow.org/versions/r0.12/get_started/os_setup
 4. Run `python ./train.py`
 
 ### Running the Chatbot
-1. Train the model as described in the previous section or download the pretrained model [LINK NEEDED](LINK NEEDED)
+1. Train the model as described in the previous section
 2. Run `python ./telegram.py`
 3. Add bot http://t.me/RUSimpsonBot to telegram and send a message to Homer.
 
 ## Screenshot Conversation
-![screenshot](screenshot.png)
+Unfortunately the combination of training on the datasets did not have an outcome as expected. It somehow overtrained on the word "oh" and dots. So on every text that needs to be processed, it responds the same.
+![screenshot](screenshot.jpg)
